@@ -1,0 +1,7 @@
+FROM josejuanmontiel/shibboleth-idp
+
+LABEL Author="josejuan.montiel@gmail.com"
+
+ADD customized-shibboleth-idp/ /opt/shibboleth-idp/
+
+# docker build -f Dockerfile.final --tag="josejuanmontiel/shibboleth-idp-custom:latest" .
