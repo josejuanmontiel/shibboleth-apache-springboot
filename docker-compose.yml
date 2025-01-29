@@ -1,0 +1,20 @@
+services:
+  shibboleth-idp-custom:
+    image: josejuanmontiel/shibboleth-idp-custom
+    environment:
+      JETTY_BROWSER_SSL_KEYSTORE_PASSWORD: 12345678 
+      JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD: 12345678
+    ports:
+      - "443:4443"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  shibboleth-sp:
+    image: josejuanmontiel/shibboleth-sp
+    privileged: true
+    ports:
+      - "1080:80"
+      - "1080:80"
+    links:
+      - shibboleth-idp-custom
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
