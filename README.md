@@ -3,6 +3,10 @@ Here try to mix a shibboleth (with optional ldap) and apache module protecting w
 
 ## Steps
 
+### 00-shibboleth-idp
+
+First aproach ...
+
 ```
 ~/shibboleth-apache-springboot/00-shibboleth-idp$ docker build . -t josejuanmontiel/shibboleth-idp
 
@@ -62,11 +66,69 @@ openssl pkcs12 -inkey key.pem -in certificate.pem -export -out idp-browser.p12
 	12345678
 ```
 
-docker run -e JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=12345678 -e JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=12345678 -it -p 443:4443 josejuanmontiel/shibboleth-idp-custom:latest /bin/bash
-
+docker run -e JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=12345678 -e JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=12345678 -p 443:4443 josejuanmontiel/shibboleth-idp-custom:latest
 
 https://localhost/idp/
 
+
+docker run -e JETTY_BROWSER_SSL_KEYSTORE_PASSWORD=12345678 -e JETTY_BACKCHANNEL_SSL_KEYSTORE_PASSWORD=12345678 -it -p 443:4443 josejuanmontiel/shibboleth-idp-custom:latest /bin/bash
+
+#### TODO
+Check
+    - https://github.com/kristophjunge/docker-test-saml-idp
+    - https://gluu.org/docs/gluu-server/3.0.1/integration/saas/testShib2/
+
+### 01-shibboleth-idp
+
+In this part we install SP part...
+
+
+openssl genrsa 2048 > apache-key.pem 
+openssl req -new -key apache-key.pem -out apache-cert.pem
+openssl genrsa 2048 > sp-key.pem
+openssl req -new -key sp-key.pem -out sp-cert.pem
+
+8. Run `./certificate.sh` script to generate metadata certificates.
+
+docker build . -t josejuanmontiel/shibboleth-sp
+
+docker container run \
+    --privileged \
+    --rm \
+    --name shibboleth-sp \
+    --hostname shibboleth-sp \
+    -p 1080:80 -p 1443:443 \
+    josejuanmontiel/shibboleth-sp
+
+http://localhost:1080/secure
+
+No MetadataProvider available.
+
+
+jose@x230n:~/workspace/sandbox/shibboleth-apache-springboot/01-shibboleth-sp$ docker container run -it --tmpfs /run -v /sys/fs/cgroup:/sys/fs/cgroup:rw  --name shibboleth-sp --hostname shibboleth-sp -p 1080 -p 1443 josejuanmontiel/shibboleth-sp
+
+#### Links
+https://shibboleth.atlassian.net/wiki/spaces/CONCEPT/pages/928645290/FlowsAndConfig
+https://itssc.rpi.edu/hc/en-us/articles/22007796523661-Implementing-SSO-Authentication-with-Shibboleth-SP3-for-Redhat-Based-Systems
+https://github.com/ConsortiumGARR/idem-tutorials/blob/master/idem-fedops/HOWTO-Shibboleth/Service%20Provider/CentOS/HOWTO%20Install%20and%20Configure%20a%20Shibboleth%20SP%20v3.x%20on%20CentOS%207%20(x86_64).md#install-shibboleth-service-provider
+
+https://docs.tuakiri.ac.nz/service_providers/installing_shibboleth_sp_on_redhat_based_linux
+https://elan-ev.github.io/shibboleth-nginx-repo/
+https://shibboleth.net/cgi-bin/sp_repo.cgi?platform=rockylinux9
+
+https://shibboleth.atlassian.net/wiki/spaces/SP3/pages/2065335566/RPMInstall
+https://shibboleth.atlassian.net/wiki/spaces/SP3/pages/2067398698/SRPMBuild#Targeting-a-Custom-Apache
+
+https://mirrors.rit.edu/shibboleth/CentOS_8/src/
+https://mirrors.rit.edu/shibboleth/rockylinux9/src/
+
+https://shibboleth.atlassian.net/wiki/spaces/SP3/pages/2065335693/ReleaseNotes
+https://shibboleth.net/community/advisories/secadv_20190311.txt
+https://shibboleth.net/downloads/service-provider/3.0.4/SRPMS/
+
+https://github.com/craigpg/shibboleth-sp2/tree/master
+
+### 02-shibboleth-idp
 
 ## References
 
@@ -76,6 +138,18 @@ https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022a
 https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5?container-tabs=dockerfile
 https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5?container-tabs=gti&gti-tabs=unauthenticated
     docker pull registry.access.redhat.com/ubi9/ubi-minimal:9.5-1736404155
+
+### Redhat UBI query repositories
+https://www.redhat.com/en/blog/introduction-ubi-micro
+https://access.redhat.com/articles/4238681
+https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/b/
+
+https://rpmfind.net/linux/rpm2html/search.php?query=boost-devel&submit=Search+...&system=&arch=x86_64
+https://rpmfind.net/linux/rpm2html/search.php?query=doxygen&submit=Search+...&system=&arch=x86_64
+
+https://shibboleth-mirror.cdi.ti.ja.net/CentOS_8/x86_64/shibboleth-3.0.4-1.x86_64.rpm
+https://shibboleth-mirror.cdi.ti.ja.net/rockylinux9/x86_64/shibboleth-3.5.0-2.el9.x86_64.rpm
+https://shibboleth-mirror.cdi.ti.ja.net/rockylinux9/src/shibboleth-3.5.0-2.el9.src.rpm
 
 ### Shibboleth IdP
 https://github.com/Unicon/shibboleth-idp-dockerized
@@ -92,7 +166,7 @@ Using (this)[https://github.com/wlod/experimental-lb-modjk] extend this aproach 
 
 ### Extra
 
-### Another examples
+### Another examples - All in One
 https://github.com/winstonhong/Shibboleth-SAML-IdP-and-SP
 
 #### Ldap
@@ -101,3 +175,22 @@ https://github.com/osixia/docker-openldap
 #### Information about ...
 https://shibboleth.atlassian.net/wiki/spaces/CONCEPT/pages/928645290/FlowsAndConfig
 https://shibboleth.atlassian.net/wiki/spaces/SP3/pages/2065335062/Apache
+
+#### Upgrade IdP / Jetty
+https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/1274544254/Jetty94
+https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/1265631513/Upgrading
+https://shibboleth.atlassian.net/wiki/spaces/IDP5/pages/3199500925/Upgrading
+
+#### Jetty stuff
+https://stackoverflow.com/questions/74820235/logback-1-3-0-and-jetty-9-4-50-having-the-compatibility-issues
+https://logback.qos.ch/access.html
+https://jetty.org/docs/jetty/12/operations-guide/start/index.html#configure
+
+#### Conversion Docker to Ansible
+https://github.com/SegFaulti4/dockerfile-ansible-convert
+https://www.adaltas.com/en/2017/10/25/from-dockerfile-to-ansible-containers/
+https://github.com/mellena1/UnDockerize
+
+#### Centos (EOL) to RedHat
+https://www.redhat.com/en/topics/linux/centos-alternatives
+https://docs.rockylinux.org/guides/migrate2rocky/
