@@ -5,7 +5,7 @@ Here try to mix a shibboleth (with optional ldap) and apache module protecting w
 
 ### 00-shibboleth-idp
 
-First aproach ...
+First aproach https://github.com/Unicon/shibboleth-idp-dockerized
 
 ```
 ~/shibboleth-apache-springboot/00-shibboleth-idp$ docker build . -t josejuanmontiel/shibboleth-idp
@@ -80,7 +80,7 @@ Check
 
 ### 01-shibboleth-idp
 
-In this part we install SP part...
+In this part we install SP part... https://github.com/JanOppolzer/shibboleth-sp-docker
 
 
 openssl genrsa 2048 > apache-key.pem 
@@ -128,18 +128,54 @@ https://shibboleth.net/downloads/service-provider/3.0.4/SRPMS/
 
 https://github.com/craigpg/shibboleth-sp2/tree/master
 
-### 02-shibboleth-idp
+### 02-shibboleth-mod-jk
+
+[https://github.com/wlod/experimental-lb-modjk
+
+### 03-shibboleth-add-ldap-and-extras
+
+
+
+
+
 
 ## References
 
-### Redhat images UBI
+### Shibboleth IdP
+https://github.com/Unicon/shibboleth-idp-dockerized
+https://github.com/iay/shibboleth-idp-docker
+
+### Shibboleth SP Apache Module
+Using (this)[https://github.com/JanOppolzer/shibboleth-sp-docker] aproach try to configure a simple...
+
+### Apache
+Using (this)[https://github.com/mconf/apache-shib-docker] add custom apache configuration...
+
+### Spring boot
+Using (this)[https://github.com/wlod/experimental-lb-modjk] extend this aproach to use a loadbalancer that point directly to springboot where we configure internal tomcat to use mod_jk.
+
+### Extra
+
+#### Another examples - All in One
+https://github.com/winstonhong/Shibboleth-SAML-IdP-and-SP
+
+#### Ldap
+https://github.com/osixia/docker-openldap
+
+### Redhat
+
+#### Redhat images UBI
 https://catalog.redhat.com/software/base-images#base-images-get-started
 https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5
 https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5?container-tabs=dockerfile
 https://catalog.redhat.com/software/containers/ubi9/ubi-minimal/615bd9b4075b022acc111bf5?container-tabs=gti&gti-tabs=unauthenticated
     docker pull registry.access.redhat.com/ubi9/ubi-minimal:9.5-1736404155
 
-### Redhat UBI query repositories
+https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/building_running_and_managing_containers/assembly_types-of-container-images_building-running-and-managing-containers#assembly_types-of-container-images_building-running-and-managing-containers
+https://docs.redhat.com/es/documentation/red_hat_enterprise_linux/8/html/building_running_and_managing_containers/
+using-the-ubi-init-images_building-running-and-managing-containers#using-the-ubi-init-images_building-running-and-managing-containers
+
+#### Redhat UBI query repositories
 https://www.redhat.com/en/blog/introduction-ubi-micro
 https://access.redhat.com/articles/4238681
 https://cdn-ubi.redhat.com/content/public/ubi/dist/ubi9/9/x86_64/appstream/os/Packages/b/
@@ -151,30 +187,25 @@ https://shibboleth-mirror.cdi.ti.ja.net/CentOS_8/x86_64/shibboleth-3.0.4-1.x86_6
 https://shibboleth-mirror.cdi.ti.ja.net/rockylinux9/x86_64/shibboleth-3.5.0-2.el9.x86_64.rpm
 https://shibboleth-mirror.cdi.ti.ja.net/rockylinux9/src/shibboleth-3.5.0-2.el9.src.rpm
 
-### Shibboleth IdP
-https://github.com/Unicon/shibboleth-idp-dockerized
-https://github.com/iay/shibboleth-idp-docker
 
-### Shibboleth Apache Module
-Using (this)[https://github.com/JanOppolzer/shibboleth-sp-docker] aproach try to configure a simple...
-
-### Apache
-Using (this)[https://github.com/mconf/apache-shib-docker] add custom apache configuration...
-
-### Spring boot
-Using (this)[https://github.com/wlod/experimental-lb-modjk] extend this aproach to use a loadbalancer that point directly to springboot where we configure internal tomcat to use mod_jk.
-
-### Extra
-
-### Another examples - All in One
-https://github.com/winstonhong/Shibboleth-SAML-IdP-and-SP
-
-#### Ldap
-https://github.com/osixia/docker-openldap
+### General info
 
 #### Information about ...
 https://shibboleth.atlassian.net/wiki/spaces/CONCEPT/pages/928645290/FlowsAndConfig
 https://shibboleth.atlassian.net/wiki/spaces/SP3/pages/2065335062/Apache
+https://shibboleth.atlassian.net/wiki/spaces/SHIB2/pages/2577072495/NativeSPTroubleshootingCommonErrors#NativeSPTroubleshootingCommonErrors-Unabletolocatemetadataforidentityprovider(https://identities.supervillain.edu/idp/shibboleth).
+
+#### Docker Privileged - CGroup - ...
+https://stackoverflow.com/questions/36617368/docker-centos-7-with-systemctl-failed-to-mount-tmpfs-cgroup
+https://serverfault.com/questions/1053187/systemd-fails-to-run-in-a-docker-container-when-using-cgroupv2-cgroupns-priva
+
+https://docs.kernel.org/admin-guide/cgroup-v1/index.html
+https://docs.kernel.org/admin-guide/cgroup-v2.html
+
+https://coffeebytes.dev/es/container-de-docker-con-namespaces-y-cgroups/
+https://www.whexy.com/posts/cgroup-inside-containers
+
+https://github.com/compose-spec/compose-spec/blob/main/spec.md#extra_hosts
 
 #### Upgrade IdP / Jetty
 https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/1274544254/Jetty94
@@ -194,3 +225,10 @@ https://github.com/mellena1/UnDockerize
 #### Centos (EOL) to RedHat
 https://www.redhat.com/en/topics/linux/centos-alternatives
 https://docs.rockylinux.org/guides/migrate2rocky/
+
+#### Redhat Httpd Start/Stop
+https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/5/html/deployment_guide/s1-apache-startstop#s1-apache-startstop
+
+
+#### Certificates
+

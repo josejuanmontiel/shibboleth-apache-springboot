@@ -15,24 +15,29 @@ COPY files/apache-cert.pem \
 COPY files/apache-key.pem \
     /etc/ssl/private/
 
-COPY files/default-ssl.conf \
-    /etc/apache2/sites-available/
+# COPY files/default-ssl.conf \
+#     /etc/apache2/sites-available/
 
-COPY files/metadata-template.xml \
-    files/sp-cert.pem \
-    files/sp-key.pem \
-    /etc/shibboleth/
+COPY files/httpd.conf \
+    /etc/httpd/conf
 
-COPY files/shibboleth2.xml \
-    files/attribute-map.xml \
-    /etc/shibboleth/
+# COPY files/metadata-template.xml \
+#     files/sp-cert.pem \
+#     files/sp-key.pem \
+#     /etc/shibboleth/
 
-RUN cd /etc/shibboleth && \
-#   chown _shibd sp-*.pem  && \ 
-   chmod go= sp-key.pem
+# COPY files/shibboleth2.xml \
+#     files/attribute-map.xml \
+#     /etc/shibboleth/
 
-# COPY files/shibd-apache2 \
-#     /usr/local/sbin/
+# RUN cd /etc/shibboleth && \
+# #   chown _shibd sp-*.pem  && \ 
+#    chmod go= sp-key.pem
+
+# # COPY files/shibd-apache2 \
+# #     /usr/local/sbin/
+
+ADD /shibboleth-sp/ /etc/shibboleth/
 
 EXPOSE 80 443
 

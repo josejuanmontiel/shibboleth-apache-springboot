@@ -13,7 +13,7 @@ services:
     privileged: true
     ports:
       - "1080:80"
-      - "1080:80"
+      - "1443:443"
     links:
       - shibboleth-idp-custom
     extra_hosts:
